@@ -1,0 +1,21 @@
+#!/bin/sh
+
+ruleset=rx51
+
+for ini in `find /etc/ohm/plugins.d -type l -name *.ini` ; do
+    rm -f $ini
+done
+
+for schemas in `find /usr/share/gconf/schemas -type l -name *.schemas` ; do
+    /usr/sbin/gconf-schemas --unregister `basename $schemas`
+    rm -f $schemas
+done
+
+rm -f /usr/share/policy/rules/current
+rm -f /usr/share/policy/etc/current
+rm -f /etc/ohm/ohmd.ini
+rm -f /etc/pulse/xpolicy.conf
+
+
+
+exit 0

@@ -1,0 +1,17 @@
+Source: policy-settings
+Section: misc
+Priority: optional
+Maintainer: Krisztian Litkey <krisztian.litkey@nokia.com>
+Build-Depends: debhelper (>= 5)
+
+Package: policy-settings-rx51
+Architecture: armel
+Depends: swi-prolog-lib-core, policy-application-detector, gconf2
+Conflicts: policy-settings, libprolog0 (<= 0.0.8), ohm-plugins-misc (<= 0.6.60)
+Replaces: policy-settings
+Provides: policy-settings
+Description: Policy RX51 configuration.
+ Policy RX51 configuration.
+ .
+ Policy RX51 configuration.
+Git-Id: no

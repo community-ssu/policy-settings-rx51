@@ -1,0 +1,12 @@
+<gconfschemafile>
+	<schemalist>
+		<schema>
+			<key>/schemas/system/warranty</key>
+			<applyto>/system/warranty</applyto>
+			<owner>warranty</owner>
+			<type>string</type>
+			<default>invalid</default>
+			<locale name="C"/>
+		</schema>
+	</schemalist>
+</gconfschemafile>

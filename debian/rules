@@ -1,0 +1,24 @@
+#!/usr/bin/make -f
+# Uncomment this to turn on verbose mode.
+# export DH_VERBOSE=1
+
+build:
+
+clean:
+	dh_testdir
+	dh_testroot
+	dh_clean -ppolicy-settings-rx51
+
+binary:
+	dh_testdir
+	dh_testroot
+	dh_clean -k
+	dh_install
+	dh_compress
+	dh_fixperms
+	dh_installdeb
+	dh_gencontrol
+	dh_md5sums
+	dh_builddeb
+
+.PHONY: build clean binary

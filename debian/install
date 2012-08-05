@@ -1,0 +1,3 @@
+rx51/etc/*			/usr/share/policy/etc/rx51
+rx51/policy/policy.dresc	/usr/share/policy/rules/rx51
+rx51/policy/policy.plc		/usr/share/policy/rules/rx51

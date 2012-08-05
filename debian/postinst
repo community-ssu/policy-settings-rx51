@@ -1,0 +1,30 @@
+#!/bin/sh
+
+ruleset=rx51
+ln -sf /usr/share/policy/rules/$ruleset /usr/share/policy/rules/current
+ln -sf /usr/share/policy/etc/$ruleset /usr/share/policy/etc/current
+
+ln -sf /usr/share/policy/etc/current/pulse/xpolicy.conf /etc/pulse/xpolicy.conf
+
+ln -sf /usr/share/policy/etc/current/ohm/ohmd.ini /etc/ohm/ohmd.ini
+
+dir=plugins.d
+src=/usr/share/policy/etc/current/ohm/$dir
+dst=/etc/ohm/$dir
+mkdir -p $dst
+for ini in `cd $src ; ls -1 *.ini` ; do
+    ln -sf $src/$ini $dst/$ini
+done
+
+src=/usr/share/policy/etc/current/gconf
+dst=/usr/share/gconf/schemas
+mkdir -p $dst
+for schemas in `cd $src ; ls -1 *.schemas` ; do
+    ln -sf $src/$schemas $dst/$schemas
+    /usr/sbin/gconf-schemas --register $schemas
+done
+
+
+
+
+exit 0
