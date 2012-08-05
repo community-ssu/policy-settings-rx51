@@ -1,0 +1,62 @@
+#!/bin/sh
+# Description: Script which print all predicates from SWI prolog state file
+# Copyright: 2012 Pali Rohár <pali.rohar@gmail.com>
+# License: GPLv3
+
+if test -z "$1"; then
+	echo "Usage: $0 file.plc"
+	exit 1
+fi
+
+if ! test -f "$1"; then
+	echo "File $1 does not exist"
+	exit 1
+fi
+
+# unpack prolog code
+tail -n +$((`grep -an '^__END__$' "$0" | head -1 | cut -f1 -d:`+1)) "$0" > /tmp/print-predicates.pl
+printf "consult('/tmp/print-predicates.pl').\nmain.\n" | swipl -x "$1" -t prolog 2>/dev/null
+ret=$?
+rm -f /tmp/print-predicates.pl
+exit $ret
+
+__END__
+
+get_predicates(O) :-
+	findall(P, predicate_property(P, file(_)), O).
+
+get_properties(P, O) :-
+	findall(A, predicate_property(P, A), O).
+
+get_properties(A) :-
+	get_predicates(PA),
+	member(P, PA),
+	get_properties(P, O),
+	A = (P, O).
+
+get_all(O) :-
+	findall((P, A), get_properties((P, A)), O).
+
+print_rec([]).
+print_rec([H|T]) :-
+	write(';'),
+	write(H),
+	print_rec(T).
+
+print_entry((P, E)) :-
+	select(file(F), E, E1),
+	write(F),
+	write(';'),
+	write(P),
+%	print_rec(E1),
+	write('\n').
+
+print_all([]).
+print_all([H|T]) :-
+	print_entry(H),
+	print_all(T).
+
+main :-
+	get_all(O),
+	print_all(O).
+

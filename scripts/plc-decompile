@@ -1,0 +1,102 @@
+#!/bin/sh
+# Description: Script for decompiling SWI prolog state file
+# Copyright: 2012 Pali Rohár <pali.rohar@gmail.com>
+# License: GPLv3
+
+if test -z "$1"; then
+	echo "Usage: $0 file.plc"
+	exit 1
+fi
+
+if ! test -f "$1"; then
+	echo "File $1 does not exist"
+	exit 1
+fi
+
+# generate table file_name;predicate_name(arguments) (exclude standard prolog predicates) and save to /tmp/predicates
+./plc-predicates "$1" | grep -v '/boot/' | grep -v '/library/' | grep -v '/libprolog/' | sed 's/.*\///' | sort -u > /tmp/predicates
+
+# get all source files from plc file (exclude standard prolog system files)
+files=$(strings "$1" | grep '\.pl$' | grep -v '/boot/' | grep -v '/library/' | grep -v '/libprolog/' | sed 's/.*\///' | sort -u)
+
+for file in $files; do
+
+	echo "* Decompiling file $file"
+
+	rm -f "$file" "$file.new"
+
+	echo "Decompiling module predicates"
+	swipl -x "$1" -t "${file%.pl}:listing" > "$file.new" 2>/dev/null
+
+	if test "$?" != "0"; then
+		echo "...Failed"
+	fi
+
+	if test -s "$file.new"; then
+		module=1
+	else
+		echo "...Not a module file"
+		module=0
+	fi
+
+	predicate_list=""
+
+	# get all predicates which was in source file and decompile that which missing in file.new
+	OLD_IFS="$IFS"
+	IFS="
+"
+	for line in $(cat /tmp/predicates | grep "^$file;"); do
+		predicate="$(echo $line | sed 's/.*;//')"
+		echo "Decompiling non module predicate $predicate"
+		# rewrite predicate params from /tmp/predicates to format A, A, ...
+		opredicate="$(echo $predicate | cut -d\( -f2- | sed 's/)$//' | sed 's/_G[0-9]*/A/g')"
+		# apredicate contains number of arguments
+		apredicate="$(echo $opredicate | sed 's/[^A]//g' | wc -c)"
+		apredicate="$(($apredicate-1))"
+		# spredicate contains only predicate name
+		spredicate="$(echo $predicate | sed 's/(.*//')"
+		skip=0
+		for pline in $(grep "$spredicate(.*) :-" "$file.new"); do
+			# rewrite predicate params from $file.new to format A, A, ...
+			npredicate="$(echo $pline | cut -d\( -f2- | sed 's/) :-.*//' | sed ':loop s/\[[^]\[]*\]/A/;t loop;s/[A-Za-z][A-Za-z]*/A/g')"
+			# check if predicates has same arguments (and thus predicates are same)
+			if test "$npredicate" = "$opredicate"; then
+				skip=1
+				break
+			fi
+		done
+		if test "$skip" = "1"; then
+			echo "...Predicate already decompiled, skipping"
+		else
+			swipl -x "$1" -t "listing($predicate)" >> "$file.new" 2>/dev/null
+			if test "$?" != "0"; then
+				echo "...Failed"
+			fi
+		fi
+		if test -z "$predicate_list"; then
+			predicate_list="$spredicate/$apredicate"
+		else
+			predicate_list="$predicate_list, $spredicate/$apredicate"
+		fi
+	done
+	IFS="$OLD_IFS"
+
+	# module file needs header ":- module(module_name, predicate_list)" with predicate_list
+	if test "$module" = "1"; then
+		echo "Adding module header"
+		echo ":- module(${file%.pl},[$predicate_list])." > "$file"
+	fi
+
+	cat "$file.new" >> "$file"
+	rm "$file.new"
+
+	echo ""
+
+done
+
+echo "* Adding configuration to file policy.pl"
+cat >> policy.pl << EOF
+% Load our 'configuration' and 'subsystems'. libprolog.pl relies on subsystems.
+:- configuration(List), ensure_loaded(List).
+:- subsystems(List), use_module(List).
+EOF
