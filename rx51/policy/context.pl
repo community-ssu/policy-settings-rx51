@@ -27,10 +27,7 @@ context_variable(call, B) :-
 	),
 	context_entry(call, A, B).
 context_variable(jackbias, B) :-
-	(   headset_accessible,
-	    (   call_alerting
-	    ;   call_active
-	    )
+	(   headset_accessible
 	*-> A=on
 	;   A=off
 	),
