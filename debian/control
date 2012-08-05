@@ -2,7 +2,7 @@ Source: policy-settings
 Section: misc
 Priority: optional
 Maintainer: Krisztian Litkey <krisztian.litkey@nokia.com>
-Build-Depends: debhelper (>= 5)
+Build-Depends: debhelper (>= 5), libprolog, swi-prolog, swi-prolog-lib
 
 Package: policy-settings-rx51
 Architecture: armel

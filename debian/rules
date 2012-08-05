@@ -3,10 +3,12 @@
 # export DH_VERBOSE=1
 
 build:
+	$(MAKE)
 
 clean:
 	dh_testdir
 	dh_testroot
+	$(MAKE) clean
 	dh_clean -ppolicy-settings-rx51
 
 binary:
