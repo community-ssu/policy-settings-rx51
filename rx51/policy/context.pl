@@ -27,7 +27,9 @@ context_variable(call, B) :-
 	),
 	context_entry(call, A, B).
 context_variable(jackbias, B) :-
-	(   headset_accessible
+	(   (   headset_accessible
+	    ;   headmike_accessible
+	    )
 	*-> A=on
 	;   A=off
 	),
@@ -57,6 +59,9 @@ rules([set_context/1]).
 
 headset_accessible :-
 	fact_exists('com.nokia.policy.audio_device_accessible', [name, connected], [headset, 1]).
+
+headmike_accessible :-
+	fact_exists('com.nokia.policy.audio_device_accessible', [name, connected], [headmike, 1]).
 
 
 call_domain(A, B) :-
