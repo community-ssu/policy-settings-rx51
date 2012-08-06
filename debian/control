@@ -1,15 +1,16 @@
-Source: policy-settings
+Source: policy-settings-rx51
 Section: misc
 Priority: optional
-Maintainer: Krisztian Litkey <krisztian.litkey@nokia.com>
+XSBC-Original-Maintainer: Krisztian Litkey <krisztian.litkey@nokia.com>
+Maintainer: Pali Rohár <pali.rohar@gmail.com>
 Build-Depends: debhelper (>= 5), libprolog, swi-prolog, swi-prolog-lib
 
 Package: policy-settings-rx51
 Architecture: armel
 Depends: swi-prolog-lib-core, policy-application-detector, gconf2
-Conflicts: policy-settings, libprolog0 (<= 0.0.8), ohm-plugins-misc (<= 0.6.60)
-Replaces: policy-settings
-Provides: policy-settings
+Conflicts: policy-settings, headset-button-enabler, libprolog0 (<= 0.0.8), ohm-plugins-misc (<= 0.6.60)
+Replaces: policy-settings, headset-button-enabler
+Provides: policy-settings, headset-button-enabler
 Description: Policy RX51 configuration.
  Policy RX51 configuration.
  .

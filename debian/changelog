@@ -1,3 +1,10 @@
+policy-settings-rx51 (0.4.10.8+0m5) fremantle; urgency=low
+
+  * Enable jackbias when headset or microphone is accessible in policy prolog code
+  * Enable jackbias when headset switch is enabled in alsaped.conf
+
+ -- Pali Rohár <pali.rohar@gmail.com>  Mon, 06 Aug 2012 16:11:14 +0200
+
 policy-settings (0.4.10.7+0m5) fremantle; urgency=low
 
   * Imported upstream fremantle version 0.4.10.7+0m5
